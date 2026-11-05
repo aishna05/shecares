@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# SheCares local runtime
+node_modules/
+frontend/dist/
+backend/private_media/
+backend/.fernet_key
+.tools/
