@@ -5,19 +5,11 @@ import { useAuth } from "../auth";
 import { homeFor } from "../format";
 import { ErrorNote, Field, PageHead } from "../ui";
 
-const DEMOS = [
-  ["Aisha Kapoor", "Patient", "aisha@shecares.local"],
-  ["Dr. Meera Iyer", "Gynecologist", "meera@shecares.local"],
-  ["Dr. Ananya Shah", "Urgent queue", "ananya@shecares.local"],
-  ["Dr. Neha Kulkarni", "Waiting for approval", "neha@shecares.local"],
-  ["Admin", "Accounts and forum", "admin@shecares.local"],
-];
-
 export function Login() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("aisha@shecares.local");
-  const [password, setPassword] = useState("SheCares#2026");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   if (user) return <Navigate to={homeFor(user)} replace />;
@@ -37,45 +29,22 @@ export function Login() {
   }
 
   return (
-    <div className="auth-layout">
-      <form className="card form" onSubmit={submit}>
-        <PageHead kicker="Log in" title="Open your desk" lede="Patient, gynecologist, and admin each land on a different screen." />
-        <ErrorNote>{error}</ErrorNote>
-        <Field label="Email">
-          <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
-        </Field>
-        <Field label="Password">
-          <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" required />
-        </Field>
-        <button className="btn" type="submit" disabled={busy}>
-          {busy ? "Checking…" : "Log in"}
-        </button>
-        <p className="muted">
-          New here? <Link to="/register">Create an account</Link>
-        </p>
-      </form>
-      <aside className="card">
-        <p className="kicker">Demo accounts</p>
-        <h2>Password for all of them: SheCares#2026</h2>
-        <div className="stack">
-          {DEMOS.map(([name, role, address]) => (
-            <button
-              key={address}
-              type="button"
-              className="demo"
-              onClick={() => {
-                setEmail(address);
-                setPassword("SheCares#2026");
-              }}
-            >
-              <strong>{name}</strong>
-              <span>{role}</span>
-              <span>{address}</span>
-            </button>
-          ))}
-        </div>
-      </aside>
-    </div>
+    <form className="card form narrow-form" onSubmit={submit}>
+      <PageHead kicker="Log in" title="Log in" lede="Patients, gynecologists, and admins each land on their own screen." />
+      <ErrorNote>{error}</ErrorNote>
+      <Field label="Email">
+        <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required autoComplete="username" />
+      </Field>
+      <Field label="Password">
+        <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" required autoComplete="current-password" />
+      </Field>
+      <button className="btn" type="submit" disabled={busy}>
+        {busy ? "Checking…" : "Log in"}
+      </button>
+      <p className="muted">
+        New here? <Link to="/register">Create an account</Link>
+      </p>
+    </form>
   );
 }
 
@@ -94,8 +63,8 @@ export function Register() {
     qualifications: "",
     clinic_name: "",
     clinic_address: "",
-    fee: "700",
-    experience_years: "5",
+    fee: "",
+    experience_years: "",
     treats: "",
     bio: "",
   });

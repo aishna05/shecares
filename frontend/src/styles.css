@@ -110,9 +110,6 @@ img { max-width: 100%; }
 .page-head h1 { font-size: clamp(2.2rem, 4vw, 3.6rem); }
 .story section { margin: 3.2rem 0; }
 .hero {
-  display: grid;
-  grid-template-columns: 1.4fr 0.8fr;
-  gap: 1.5rem;
   padding: clamp(1.4rem, 4vw, 3rem);
   border-radius: 28px;
   background:
@@ -122,14 +119,6 @@ img { max-width: 100%; }
   box-shadow: var(--shadow);
 }
 .hero h1 { color: #fffaf3; }
-.hero-card {
-  background: var(--card);
-  color: var(--ink);
-  border-radius: 22px;
-  padding: 1.2rem 1.2rem 1.4rem;
-}
-.hero-card h2 { font-size: 1.8rem; }
-.tech { color: var(--gold); font-size: 0.92rem; }
 .row, .filters { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0.8rem 0; }
 .grid-3, .stats, .grid-2 { display: grid; gap: 0.9rem; }
 .grid-3, .stats { grid-template-columns: repeat(3, 1fr); }
@@ -244,8 +233,6 @@ textarea { resize: vertical; }
 @media (max-width: 860px) {
   .topbar { display: grid; grid-template-columns: 1fr auto; align-items: center; }
   .nav { grid-column: 1 / -1; }
-  .hero { display: block; }
-  .hero-card { margin-top: 1rem; }
   h1 { font-size: 2.5rem; }
   .grid-3, .grid-2, .split, .auth-layout { grid-template-columns: 1fr; }
   .stats { grid-template-columns: 1fr 1fr; }

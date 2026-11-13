@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Shell from "./components/Shell";
 import { useAuth } from "./auth";
 import { homeFor } from "./format";
-import About from "./pages/About";
 import { AdminComplaints, AdminDoctors, AdminForum, AdminHome, AdminLogs, AdminUrgent } from "./pages/admin";
 import { ArticleDetail, ArticleList } from "./pages/Articles";
 import { Login, Register } from "./pages/AuthPages";
@@ -25,7 +24,7 @@ export default function App() {
     <Routes>
       <Route element={<Shell />}>
         <Route index element={<Landing />} />
-        <Route path="about" element={<About />} />
+        <Route path="about" element={<Navigate to="/" replace />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="forum" element={<Protected><ForumList /></Protected>} />

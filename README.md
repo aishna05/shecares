@@ -18,7 +18,7 @@ From `backend`, with the virtualenv:
 .\.venv\Scripts\python manage.py runserver
 ```
 
-`seed` wipes existing accounts and loads the demo. Password for every demo account is `SheCares#2026`.
+`seed` wipes existing accounts and loads the sample clinic. Password for every seeded account is `SheCares#2026`.
 
 | Who | Email |
 | --- | --- |

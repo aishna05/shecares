@@ -66,7 +66,6 @@ export default function Shell() {
         <nav className="nav">
           {!user && (
             <>
-              <NavLink to="/about">About</NavLink>
               <NavLink to="/login">Log in</NavLink>
               <NavLink to="/register" className="nav-cta">
                 Create account
@@ -123,7 +122,6 @@ export default function Shell() {
           <p>One login for a gynecologist, your reports, and a cycle or pregnancy log.</p>
         </div>
         <div className="footer-links">
-          <Link to="/about">Aim and references</Link>
           {user && <Link to="/complaints">Raise a complaint</Link>}
           <a href="https://github.com/SheCares-SE/SheCares">Project repo</a>
         </div>
