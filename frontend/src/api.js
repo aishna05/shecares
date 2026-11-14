@@ -1,4 +1,6 @@
-const BASE = "/api";
+const BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? "/api" : "https://shecares-go1r.vercel.app/api");
 
 export function getToken() {
   return localStorage.getItem("shecares_token");
@@ -60,7 +62,11 @@ export async function api(path, options = {}, retried = false) {
   try {
     response = await fetch(`${BASE}${path}`, { method: options.method || "GET", headers, body });
   } catch {
-    throw new Error("Cannot reach the server. Start the Django app on port 8000.");
+    throw new Error(
+      import.meta.env.DEV
+        ? "Cannot reach the server. Start the Django app on port 8000."
+        : "Cannot reach the server."
+    );
   }
   if (response.status === 401 && !retried && !path.startsWith("/auth/")) {
     const renewed = await refreshAccess();

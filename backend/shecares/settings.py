@@ -15,20 +15,36 @@ def _file_encryption_key():
     if path.exists():
         return path.read_text(encoding="utf-8").strip()
     key = base64.urlsafe_b64encode(os.urandom(32)).decode()
-    path.write_text(key, encoding="utf-8")
+    try:
+        path.write_text(key, encoding="utf-8")
+    except OSError:
+        tmp = Path("/tmp/.fernet_key")
+        if tmp.exists():
+            return tmp.read_text(encoding="utf-8").strip()
+        tmp.write_text(key, encoding="utf-8")
     return key
 
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-shecares-local-only-not-for-production")
 FILE_ENCRYPTION_KEY = _file_encryption_key()
-DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+_on_vercel = bool(os.environ.get("VERCEL"))
+DEBUG = os.environ.get("DJANGO_DEBUG", "0" if _on_vercel else "1") == "1"
 
 _hosts = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
 ALLOWED_HOSTS = [host.strip() for host in _hosts.split(",") if host.strip()]
-for _name in ("RENDER_EXTERNAL_HOSTNAME", "RAILWAY_PUBLIC_DOMAIN"):
+for _name in (
+    "RENDER_EXTERNAL_HOSTNAME",
+    "RAILWAY_PUBLIC_DOMAIN",
+    "VERCEL_URL",
+    "VERCEL_PROJECT_PRODUCTION_URL",
+    "VERCEL_BRANCH_URL",
+):
     _public = os.environ.get(_name, "").strip()
+    _public = _public.removeprefix("https://").removeprefix("http://").split("/")[0]
     if _public and _public not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(_public)
+if _on_vercel and ".vercel.app" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".vercel.app")
 
 FRONTEND_DIST = Path(os.environ.get("FRONTEND_DIST", BASE_DIR.parent / "frontend" / "dist"))
 
@@ -80,6 +96,17 @@ DATABASES = {
     }
 }
 
+if _on_vercel:
+    import shutil
+
+    _db_copy = Path("/tmp/shecares.sqlite3")
+    _bundled_db = BASE_DIR / "db.sqlite3"
+    if _bundled_db.exists() and not _db_copy.exists():
+        shutil.copy2(_bundled_db, _db_copy)
+    DATABASES["default"]["NAME"] = _db_copy
+    PRIVATE_MEDIA_ROOT = Path("/tmp/shecares_private_media")
+    PRIVATE_MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+
 AUTH_USER_MODEL = "core.User"
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -100,15 +127,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://shecares-mocha.vercel.app",
+    "https://shecares-go1r.vercel.app",
 ]
 _extra_origins = os.environ.get("DJANGO_CORS_ORIGINS", "")
 CORS_ALLOWED_ORIGINS += [origin.strip() for origin in _extra_origins.split(",") if origin.strip()]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://shecares-mocha[\w.-]*\.vercel\.app$",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     "http://127.0.0.1:5173",
     "http://localhost:5173",
+    "https://shecares-mocha.vercel.app",
+    "https://shecares-go1r.vercel.app",
 ]
 for _host in ALLOWED_HOSTS:
     if _host in {"*", "127.0.0.1", "localhost"} or _host.startswith("."):
