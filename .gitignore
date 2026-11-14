@@ -224,5 +224,6 @@ node_modules/
 frontend/dist/
 backend/private_media/
 backend/.fernet_key
+backend/staticfiles/
 .tools/
 *.mp4

@@ -22,7 +22,15 @@ def _file_encryption_key():
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-shecares-local-only-not-for-production")
 FILE_ENCRYPTION_KEY = _file_encryption_key()
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
+ALLOWED_HOSTS = [host.strip() for host in _hosts.split(",") if host.strip()]
+for _name in ("RENDER_EXTERNAL_HOSTNAME", "RAILWAY_PUBLIC_DOMAIN"):
+    _public = os.environ.get(_name, "").strip()
+    if _public and _public not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_public)
+
+FRONTEND_DIST = Path(os.environ.get("FRONTEND_DIST", BASE_DIR.parent / "frontend" / "dist"))
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -38,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -85,12 +94,32 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+_extra_origins = os.environ.get("DJANGO_CORS_ORIGINS", "")
+CORS_ALLOWED_ORIGINS += [origin.strip() for origin in _extra_origins.split(",") if origin.strip()]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+]
+for _host in ALLOWED_HOSTS:
+    if _host in {"*", "127.0.0.1", "localhost"} or _host.startswith("."):
+        continue
+    CSRF_TRUSTED_ORIGINS.append(f"https://{_host}")
+_extra_csrf = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS += [origin.strip() for origin in _extra_csrf.split(",") if origin.strip()]
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

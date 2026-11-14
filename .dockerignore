@@ -1,0 +1,13 @@
+.git
+.tools
+**/*.mp4
+**/node_modules
+frontend/dist
+backend/.venv
+backend/db.sqlite3
+backend/db.sqlite3-journal
+backend/private_media
+backend/.fernet_key
+backend/staticfiles
+backend/__pycache__
+**/__pycache__

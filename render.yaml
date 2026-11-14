@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: shecares
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_DIST
+        value: /frontend/dist

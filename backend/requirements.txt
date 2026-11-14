@@ -4,3 +4,5 @@ djangorestframework-simplejwt>=5.3,<6
 django-cors-headers>=4.4,<5
 cryptography>=43,<47
 Pillow>=10,<12
+gunicorn>=23,<24
+whitenoise>=6.8,<7
